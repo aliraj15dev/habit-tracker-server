@@ -26,8 +26,14 @@ app.get("/", (req, res) => {
 async function run() {
   try {
     await client.connect();
+    const database = client.db("userHabits")
+    const habitCollection = database.collection('habits')
 
-
+    app.get('/userHabits', async (req, res)=>{
+      const cursor = habitCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
 
 
 
