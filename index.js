@@ -30,7 +30,7 @@ async function run() {
     const habitCollection = database.collection('habits')
 
     app.get('/userHabits', async (req, res)=>{
-      const cursor = habitCollection.find()
+      const cursor = habitCollection.find().sort({reminder_time:-1}).limit(6)
       const result = await cursor.toArray()
       res.send(result)
     })
