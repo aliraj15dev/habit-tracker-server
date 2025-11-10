@@ -35,6 +35,12 @@ async function run() {
       res.send(result)
     })
 
+    app.post('/addedHabit', async(req,res)=>{
+      const newHabit = req.body
+      const result = await habitCollection.insertOne(newHabit)
+      console.log(result)
+      res.send(result)
+    })
 
 
 
