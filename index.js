@@ -29,8 +29,13 @@ async function run() {
     const database = client.db("userHabits")
     const habitCollection = database.collection('habits')
 
-    app.get('/userHabits', async (req, res)=>{
+    app.get('/featuredHabits', async (req, res)=>{
       const cursor = habitCollection.find().sort({reminder_time:-1}).limit(6)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    app.get('/userHabits', async (req, res)=>{
+      const cursor = habitCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -38,7 +43,6 @@ async function run() {
     app.post('/addedHabit', async(req,res)=>{
       const newHabit = req.body
       const result = await habitCollection.insertOne(newHabit)
-      console.log(result)
       res.send(result)
     })
 
