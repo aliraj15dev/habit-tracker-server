@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 async function run() {
   try {
     await client.connect();
-    const database = client.db("userHabits")
+    const database = client.db("UserHabits")
     const habitCollection = database.collection('habits')
 
     app.get('/featuredHabits', async (req, res)=>{
@@ -39,11 +39,29 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
+    app.get('/userHabits/:id', async (req, res)=>{
+      const id = req.params.id
+      const query = new ObjectId(id)
+      const cursor = habitCollection.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
 
     app.post('/addedHabit', async(req,res)=>{
       const newHabit = req.body
       const result = await habitCollection.insertOne(newHabit)
       res.send(result)
+    })
+
+      app.patch('/userHabit/:id', async(req, res)=>{
+        const id = req.params.id
+        const updatedHabit = req.body
+        const query = {_id: new ObjectId(id)}
+        const update = {
+            $set:updatedHabit
+        }
+        const result = await habitCollection.updateOne(query, update)
+        res.send(result)
     })
 
 
