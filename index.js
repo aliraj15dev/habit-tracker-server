@@ -53,7 +53,7 @@ async function run() {
       res.send(result)
     })
 
-      app.patch('/userHabit/:id', async(req, res)=>{
+      app.patch('/userHabits/:id', async(req, res)=>{
         const id = req.params.id
         const updatedHabit = req.body
         const query = {_id: new ObjectId(id)}
@@ -61,6 +61,13 @@ async function run() {
             $set:updatedHabit
         }
         const result = await habitCollection.updateOne(query, update)
+        res.send(result)
+    })
+
+    app.delete('/userHabits/:id', async(req, res)=>{
+        const {id} = req.params
+        const query = {_id: new ObjectId(id)}
+        const result = await habitCollection.deleteOne(query)
         res.send(result)
     })
 
