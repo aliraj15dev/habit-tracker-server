@@ -26,11 +26,16 @@ app.get("/", (req, res) => {
 async function run() {
   try {
     await client.connect();
-    const database = client.db("UserHabits")
+    const database = client.db("habitsTrackerDB")
     const habitCollection = database.collection('habits')
 
     app.get('/featuredHabits', async (req, res)=>{
-      const cursor = habitCollection.find().sort({reminder_time:-1}).limit(6)
+      const email = req.query.email;
+      const query = {}
+      if(email){
+        query.userEmail = email
+      }
+      const cursor = habitCollection.find(query).sort({reminderTime:-1}).limit(6)
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -41,9 +46,8 @@ async function run() {
     })
     app.get('/userHabits/:id', async (req, res)=>{
       const id = req.params.id
-      const query = new ObjectId(id)
-      const cursor = habitCollection.find(query)
-      const result = await cursor.toArray()
+      const query = {_id: new ObjectId(id)}
+      const result = await habitCollection.findOne(query)
       res.send(result)
     })
 
@@ -55,6 +59,7 @@ async function run() {
 
       app.patch('/userHabits/:id', async(req, res)=>{
         const id = req.params.id
+        console.log(id)
         const updatedHabit = req.body
         const query = {_id: new ObjectId(id)}
         const update = {
@@ -65,7 +70,7 @@ async function run() {
     })
 
     app.delete('/userHabits/:id', async(req, res)=>{
-        const {id} = req.params
+        const id = req.params.id
         const query = {_id: new ObjectId(id)}
         const result = await habitCollection.deleteOne(query)
         res.send(result)
